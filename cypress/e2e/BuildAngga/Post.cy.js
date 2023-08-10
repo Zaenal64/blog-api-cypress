@@ -91,7 +91,7 @@ describe('Post Module', ()=>{
                 },
                 failOnStatusCode: false,
               }).then((response) => {
-                expect(response.body.message).to.eq("Get all posts")
+                expect(response.body.message).to.eq("Get all posts"),
                 expect(response.body.success).to.be.true
               })
             })
