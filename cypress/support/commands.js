@@ -138,3 +138,53 @@ Cypress.Commands.add('generateUserData', (count)=>{
         }
     }))
 })
+
+Cypress.Commands.add('createPosts', (data = []) => {
+    cy.loginNewAccount()
+
+    // RESET POST
+    cy.request({
+        method: 'DELETE',
+        url: '/posts/reset',
+        headers: {
+            authorization: `Bearer ${Cypress.env('token')}`
+        }
+    })
+
+    // CREATE POSTS
+    data.forEach((_posts) => {
+        cy.request({
+            method: 'POST',
+            url: '/posts',
+            headers:{
+                authorization: `Bearer ${Cypress.env('token')}`
+            },
+            body: _posts,
+                // title: _posts.title,
+                // content: _posts.content
+        })
+    });
+})
+
+Cypress.Commands.add('generateCommentsData', (count)=>{
+    const {faker} = require('@faker-js/faker')
+
+    cy.request({
+        method: 'DELETE',
+        url: '/comments/reset',
+        headers: {
+            authorization: `Bearer ${Cypress.env('token')}`
+        }
+    })
+
+    cy.generatePostsData(3) //membuat sampai max id 5 secara acak
+    cy.fixture('posts').then(posts => cy.createPosts(posts))
+
+    cy.writeFile('cypress/fixtures/comments.json',
+    Cypress._.times(count, ()=>{
+        return{
+            post_id: faker.datatype.number({min: 1, max: 3 }),
+            content: faker.lorem.words(5) // terdiri dari 5 kata
+        }
+    }))
+})
